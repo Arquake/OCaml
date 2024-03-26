@@ -1,0 +1,4 @@
+(executable
+ (public_name devoir_de_programmation)
+ (name main)
+ (libraries lib str))
