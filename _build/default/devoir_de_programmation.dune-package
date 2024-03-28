@@ -1,0 +1,7 @@
+(lang dune 3.14)
+(name devoir_de_programmation)
+(sections (lib .) (bin ../../bin) (doc ../../doc/devoir_de_programmation))
+(files
+ (lib (META dune-package opam))
+ (bin (devoir_de_programmation))
+ (doc (README.md)))
