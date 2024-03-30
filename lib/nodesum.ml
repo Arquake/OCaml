@@ -3,11 +3,11 @@ type answer = int
 type node = { answer : answer; left : int; right : int }
 
 let create : data -> answer = 
- fun _ -> 
-  0
+ fun element -> 
+  { answer = data ; left = 0 ; right = 0 }
 
 let combine : node -> node -> node =
- fun _ _ ->
+ fun left_node right_node->
   { answer = 0; left = 0; right = 0 }
 
 let to_string : answer -> string = 
