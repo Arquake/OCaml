@@ -19,15 +19,14 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
       match elements with
       | [] -> create_recursively rest []
       | h::[] -> h
-      | h1::h2::t when h1.node > h2.node -> rest @ [Node(h1.node,h1,h2)]
-      | h1::h2::t when h2.node > h1.node -> rest @ [Node(h2.node,h1,h2)]
+      | h1::h2::t when h1.node > h2.node -> rest @ [Node.combine h1, h2]
     in
     (create_recursively (create_leaves list []) [])
 
   (* Mise à jour d’un élément de la liste *)
   let update : tree -> data -> int -> tree =
-   fun _ _ _  ->
-    Leaf { node = { answer = N.create 0 ; left = 0 ; right = 0 } }
+   fun arbre to_update the_update  ->
+   
 
   let query : tree -> int -> int -> answer =
    fun _ _ _ -> 
