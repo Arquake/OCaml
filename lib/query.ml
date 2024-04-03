@@ -22,7 +22,7 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
       match elements with
       | [] -> create_recursively rest []
       | h::[] -> h
-      | h1::h2::t when h1.node > h2.node -> rest @ [Node.combine h1, h2]
+      | h1::h2::t when h1.node > h2.node -> rest @ [{node = N.combine h1, h2; right_child = h1 ; left_child = h2}]
     in
     (create_recursively (create_leaves list []) [])
 
