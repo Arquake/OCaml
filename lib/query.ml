@@ -10,9 +10,12 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
   (* Création de l’arbre *)
   let create : data list -> tree = 
    fun list->
+    let leave = fun l value ->
+      let l1 = l.left = value in let l2 = l1.right = value
+    in
     let rec create_leaves = fun list rest ->
       match list with
-      | h::[] -> rest @ [Leaf(h)]
+      | h::[] -> rest @ [leave Leaf(h) List.length rest]
       | h::t -> create_leaves t (rest @ [Leaf(h)])
     in
     let rec create_recursively = fun elements rest ->
@@ -26,6 +29,7 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
   (* Mise à jour d’un élément de la liste *)
   let update : tree -> data -> int -> tree =
    fun arbre to_update the_update  ->
+
    
 
   let query : tree -> int -> int -> answer =
