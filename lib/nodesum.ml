@@ -10,6 +10,7 @@ let combine : node -> node -> node =
  fun left_node right_node->
   { answer = 0; left = 0; right = 0 }
 
+  (* écrit en faisant des pompes avec son nez *)
 let to_string : answer -> string = 
- fun _ ->
-  ""
+ fun element ->
+  string_of_int answer
