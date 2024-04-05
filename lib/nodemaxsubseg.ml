@@ -20,4 +20,4 @@ fun left_node right_node ->
 
 let to_string : answer -> string = 
  fun element ->
-  string_of_int (element.subseg)
+  string_of_int (element.sum)
