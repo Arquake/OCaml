@@ -1,0 +1,52 @@
+# dune build
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location: /Users/aminmiri/.cache/dune/db
+# Workspace root: /Users/aminmiri/Downloads/OCaml
+# Auto-detected concurrency: 8
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; installed_env =
+#      map
+#        { "INSIDE_DUNE" : "/Users/aminmiri/Downloads/OCaml/_build/default"
+#        ; "OCAML_COLOR" : "always"
+#        ; "OPAMCOLOR" : "always"
+#        }
+#  ; instrument_with = []
+#  }
+$ /opt/homebrew/bin/ocamlc.opt -config > /var/folders/vv/x3k81l7d517g3jx5p1yf9h2r0000gn/T/dune_2946b6_output
+$ (cd _build/default && /opt/homebrew/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lib/.lib.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Lib__ -o lib/.lib.objs/byte/lib__Query.cmo -c -impl lib/query.ml)
+> File "lib/query.ml", line 14, characters 20-26:
+> 14 |       Leaf({node = {answer = N.create l; left = value; right = value}})
+>                          ^^^^^^
+> Error: Unbound record field answer
+[2]
+$ (cd _build/default && /opt/homebrew/bin/ocamlc.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -bin-annot -I lib/.lib.objs/byte -intf-suffix .ml -no-alias-deps -opaque -open Lib__ -o lib/.lib.objs/byte/lib__Nodemaxocc.cmo -c -impl lib/nodemaxocc.ml)
+> File "lib/nodemaxocc.ml", lines 11-14, characters 2-89:
+> 11 | ..match n1.answer with
+> 12 |   | (e1,_) when fst n2.answer > e1 -> {answer = (fst n2.answer,snd n2.answer); left = n1.left; right = n2.right }
+> 13 |   | (e1,e2) when fst n2.answer < e1 -> {answer = (e1,e2); left = n1.left; right = n2.right }
+> 14 |   | (e1,_) when fst n2.answer = e1 -> {answer = (0,0); left = n1.left; right = n2.right }
+> Error (warning 8 [partial-match]): this pattern-matching is not exhaustive.
+> All clauses in this pattern-matching are guarded.
+[2]
+$ (cd _build/default && /opt/homebrew/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.lib.objs/byte -I lib/.lib.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Lib__ -o lib/.lib.objs/native/lib__Query.cmx -c -impl lib/query.ml)
+> File "lib/query.ml", line 14, characters 20-26:
+> 14 |       Leaf({node = {answer = N.create l; left = value; right = value}})
+>                          ^^^^^^
+> Error: Unbound record field answer
+[2]
+$ (cd _build/default && /opt/homebrew/bin/ocamlopt.opt -w @1..3@5..28@31..39@43@46..47@49..57@61..62@67@69-40 -strict-sequence -strict-formats -short-paths -keep-locs -g -I lib/.lib.objs/byte -I lib/.lib.objs/native -intf-suffix .ml -no-alias-deps -opaque -open Lib__ -o lib/.lib.objs/native/lib__Nodemaxocc.cmx -c -impl lib/nodemaxocc.ml)
+> File "lib/nodemaxocc.ml", lines 11-14, characters 2-89:
+> 11 | ..match n1.answer with
+> 12 |   | (e1,_) when fst n2.answer > e1 -> {answer = (fst n2.answer,snd n2.answer); left = n1.left; right = n2.right }
+> 13 |   | (e1,e2) when fst n2.answer < e1 -> {answer = (e1,e2); left = n1.left; right = n2.right }
+> 14 |   | (e1,_) when fst n2.answer = e1 -> {answer = (0,0); left = n1.left; right = n2.right }
+> Error (warning 8 [partial-match]): this pattern-matching is not exhaustive.
+> All clauses in this pattern-matching are guarded.
+[2]
