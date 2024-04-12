@@ -34,13 +34,31 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
           Leaf({node = {answer = N.create number; left = position; right = position}})
         else
           Leaf(x)
+      (*just to make sure that if something goes wrong with the traversal the whole leafs dont get fucked up*)    
       | Node(x) when x.left + ((x.right-x.left) / 2) >= int -> Node({node = N.combine; left_child = (research_and_replace x.left); right_child = (x.right)})
       | Node(x) when x.left + ((x.right-x.left) / 2) <= int -> Node({node = N.combine; left_child = (x.left); right_child = (research_and_replace x.right)})
     in research_and_replace arbre
-   
 
-  let query : tree -> int -> int -> answer =
-    (* to do *)
-    
+    let query : tree -> int -> int -> answer = fun tree l r ->
+      let rec aux node l r =
+        match node with
+        | Leaf { node = n } ->
+          if n.left >= l && n.right <= r then
+            n.answer
+          else
+            failwith "Outside the range"  
+        | Node { node = n; left_child = lc; right_child = rc } ->
+          if r < n.left || l > n.right then
+            failwith "Outside the range" 
+          else if l <= n.left && r >= n.right then
+            n.answer  (* this only happens when the query gods smile upon us*)
+            
+          else (*this happens when the query gods aren't satisfied with our blood sacrifises *)
+           let left_node = if l <= n.left + ((n.right - n.left) / 2) then aux lc l r else { answer = N.create 0; left = n.left; right = n.left + ((n.right - n.left) / 2) } in
+           let right_node = if r > n.left + ((n.right - n.left) / 2) then aux rc l r else { answer = N.create 0; left = n.left + ((n.right - n.left) / 2) + 1; right = n.right } in
+            (*i'm pretty sure these are right*)
+           (N.combine left_node right_node).answer
+      in
+      aux tree l r
     
 end
