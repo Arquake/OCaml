@@ -32,18 +32,18 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
   (* Mise à jour d’un élément de la liste *)
   let update : tree -> data -> int -> tree = fun arbre number position ->
     let rec research_and_replace = function
-      | Leaf { node } ->
-        if node.left = position && node.right = position then
-          Leaf { node = { answer = N.create number; left = position; right = position } }
+      | Leaf ({node={N.answer;left;right}}) ->
+        if left= position && right = position then
+          Leaf ({ node = { N.answer = N.create number; left = position; right = position } })
         else
-          Leaf { node }
-      | Node { node; left_child; right_child } ->
-        if position <= node.left + ((node.right - node.left) / 2) then
+          Leaf ({node={N.answer;left;right}})
+      | Node ({ node={N.answer;left;right}; left_child; right_child })->
+        if position <= left + ((right - left) / 2) then
           let updated_left_child = research_and_replace left_child in
-          Node { node = N.combine updated_left_child.node right_child.node; left_child = updated_left_child; right_child }
+          Node ({ node = N.combine updated_left_child.node right_child.node; left_child = updated_left_child; right_child })
         else
           let updated_right_child = research_and_replace right_child in
-          Node { node = N.combine left_child.node updated_right_child.node; left_child; right_child = updated_right_child }
+          Node ({ node = N.combine left_child.node updated_right_child.node; left_child; right_child = updated_right_child })
     in
     research_and_replace arbre
 
