@@ -21,9 +21,11 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
     in
     let rec create_recursively elements rest =
       match elements with
-      | [] -> create_recursively rest []
+      | Leaf(h1) :: Leaf(h2) :: t -> create_recursively t (rest @ [Node ({node = N.combine (h1.node) (h2.node); left_child = Leaf(h1); right_child = Leaf(h2)})])
+      | Node(h1) :: Node(h2) :: t -> create_recursively t (rest @ [Node ({node = N.combine (h1.node) (h2.node); left_child = Node(h1); right_child = Node(h2)})])
       | h :: [] -> h
-      | h1 :: h2 :: t -> rest @ [Node ({ node = { N.answer = N.combine (h1.node) (h2.node); left_child = h1; right_child = h2} })]
+      | [] -> create_recursively rest []
+      
     in
     create_recursively (create_leaves list []) []
 
