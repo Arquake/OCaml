@@ -13,15 +13,17 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
       Leaf ({ node = { N.answer = N.create l; left = value; right = value } })
     in
     let rec create_leaves list rest =
+      let value = List.length rest in
       match list with
-      | h :: [] -> rest @ [leave h (List.length rest)]
-      | h :: t -> create_leaves t (rest @ [Leaf ({ node = h (List.length rest)})])
+      | [] -> rest
+      | h :: [] -> rest @ [leave h value]
+      | h :: t -> create_leaves t (rest @ [leave h value])
     in
     let rec create_recursively elements rest =
       match elements with
       | [] -> create_recursively rest []
       | h :: [] -> h
-      | h1 :: h2 :: t -> rest @ [Node { node = N.combine h1.node h2.node; left_child = h1; right_child = h2 }]
+      | h1 :: h2 :: t -> rest @ [Node ({ node = { N.answer = N.combine (h1.node) (h2.node); left_child = h1; right_child = h2} })]
     in
     create_recursively (create_leaves list []) []
 
