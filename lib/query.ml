@@ -10,12 +10,12 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
   (* Création de l’arbre *)
   let create : data list -> tree = fun list ->
     let leave = fun l value ->
-      Leaf ({ node = { answer = N.create l; left = value; right = value } })
+      Leaf ({ node = { N.answer = N.create l; left = value; right = value } })
     in
     let rec create_leaves list rest =
       match list with
       | h :: [] -> rest @ [leave h (List.length rest)]
-      | h :: t -> create_leaves t (rest @ [Leaf { node = h }])
+      | h :: t -> create_leaves t (rest @ [Leaf ({ node = h (List.length rest)})])
     in
     let rec create_recursively elements rest =
       match elements with
