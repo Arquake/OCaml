@@ -47,24 +47,26 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
     in
     research_and_replace arbre
 
-  let query : tree -> int -> int -> answer = fun tree l r ->
-    let rec aux node l r =
-      match node with
-      | Leaf { node = n } ->
-        if n.left >= l && n.right <= r then
-          n.answer
-        else
-          failwith "Outside the range"
-      | Node { node = n; left_child = lc; right_child = rc } ->
-        if r < n.left || l > n.right then
-          failwith "Outside the range"
-        else if l <= n.left && r >= n.right then
-          n.answer
-        else
-          let left_node = if l <= n.left + ((n.right - n.left) / 2) then aux lc l r else { node = { answer = N.create 0; left = n.left; right = n.left + ((n.right - n.left) / 2) } } in
-          let right_node = if r > n.left + ((n.right - n.left) / 2) then aux rc l r else { node = { answer = N.create 0; left = n.left + ((n.right - n.left) / 2) + 1; right = n.right } } in
-          N.combine left_node right_node
-    in
-    aux tree l r
+    let query : tree -> int -> int -> answer = fun tree l r ->
+      let rec aux node l r =
+        match node with
+        | Leaf { node = { N.answer; left; right } } ->
+          if left >= l && right <= r then
+            answer
+          else
+            failwith "Outside the range"
+        | Node { node = { N.answer; left; right }; left_child; right_child } ->
+          if r < left || l > right then
+            failwith "Outside the range"
+          else if l <= left && r >= right then
+            answer
+          else
+            let middle = left + ((right - left) / 2) in
+            let left_node = if r <= middle then aux left_child l r else { answer = N.create 0; left = left; right = middle } in
+            let right_node = if l > middle then aux right_child l r else { answer = N.create 0; left = middle + 1; right = right } in
+            N.combine left_node right_node
+      in
+      aux tree l r
+    
     
 end
