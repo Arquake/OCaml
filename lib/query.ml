@@ -52,19 +52,21 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
         match node with
         | Leaf { node = { N.answer; left; right } } ->
           if left >= l && right <= r then
-            answer
+            answer 
           else
             failwith "Outside the range"
+
         | Node { node = { N.answer; left; right }; left_child; right_child } ->
           if r < left || l > right then
             failwith "Outside the range"
           else if l <= left && r >= right then
-            answer
+            answer  (* this only happens when the query gods smile upon us*)
           else
+            (*this happens when the query gods aren't satisfied with our blood sacrifises *)
             let middle = left + ((right - left) / 2) in
             let left_node = if r <= middle then aux left_child l r else { answer = N.create 0; left = left; right = middle } in
             let right_node = if l > middle then aux right_child l r else { answer = N.create 0; left = middle + 1; right = right } in
-            N.combine left_node right_node
+            N.combine left_node right_node (*query gods are obviously trying to make me kill myself*)
       in
       aux tree l r
     
