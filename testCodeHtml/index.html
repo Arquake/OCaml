@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Code rentré dans try Ocaml :</h1>
+
+
+    type 'a binary_tree =<br>
+  | Leaf of { node : 'a }<br>
+  | Node of {<br>
+      node : 'a;<br>
+      left_child : 'a binary_tree;<br>
+      right_child : 'a binary_tree;<br>
+    }<br>
+    <br>
+type data = int<br>
+type answer = int<br>
+type node = { answer : answer; left : int; right : int }<br>
+<br>
+type tree = node binary_tree<br>
+<br>
+<br>
+<br>
+<br>
+let create_data : data -> answer = <br>
+  fun element -> <br>
+    element<br>
+<br>
+let combine : node -> node -> node =<br>
+  fun left_node right_node-><br>
+    { answer = left_node.answer + right_node.answer; left = left_node.left; right = right_node.right }<br>
+    <br>
+  (* écrit en faisant des pompes avec son nez *)<br>
+let to_string : answer -> string = <br>
+  fun element -><br>
+    string_of_int element<br>
+<br>
+      <br>
+let create : data list -> tree = fun list -><br>
+  let leave = fun l value -><br>
+    Leaf ({ node = { answer = create_data l; left = value; right = value } })<br>
+  in<br>
+  let rec create_leaves list rest =<br>
+    let value = List.length rest in<br>
+    match list with<br>
+    | [] -> rest<br>
+    | h :: [] -> rest @ [leave h value]<br>
+    | h :: t -> create_leaves t (rest @ [leave h value])<br>
+  in<br>
+  let rec create_recursively elements rest =<br>
+    match elements with<br>
+    | Leaf(h1) :: Leaf(h2) :: t -> create_recursively t (rest @ [Node ({node = combine (h1.node) (h2.node); left_child = Leaf(h1); right_child = Leaf(h2)})])<br>
+    | Node(h1) :: Node(h2) :: t -> create_recursively t (rest @ [Node ({node = combine (h1.node) (h2.node); left_child = Node(h1); right_child = Node(h2)})])<br>
+    | h :: [] -> h<br>
+    | _ -> create_recursively rest []<br>
+      
+  in<br>
+  create_recursively (create_leaves list []) []<br>
+    
+    
+let update : tree -> data -> int -> tree = fun arbre number position -><br>
+  let get_node = <br>
+    function<br>
+    | Node(n) -> n.node<br>
+    | Leaf(n) -> n.node<br>
+  in<br>
+  let rec research_and_replace = function<br>
+    | Leaf ({node={answer;left;right}}) -><br>
+        if left= position && right = position then<br>
+          Leaf ({ node = { answer = create_data number; left = position; right = position } })<br>
+        else<br>
+          Leaf ({node={answer;left;right}})<br>
+    | Node ({ node={answer = _;left;right}; left_child; right_child })-><br>
+        (* Si la position rechercher est à gauche on se déplace à gauche *)<br>
+        if position <= left + ((right - left) / 2) then<br>
+          let updated_left_child = research_and_replace left_child in<br>
+          Node ({ node = combine (get_node updated_left_child) (get_node right_child); left_child = updated_left_child; right_child })<br>
+        else<br>
+          (* Si la position rechercher est à droite on se déplace à droite *)<br>
+          let updated_right_child = research_and_replace right_child in<br>
+          Node ({ node = combine (get_node left_child) (get_node updated_right_child); left_child; right_child = updated_right_child })<br>
+  in<br>
+  research_and_replace arbre<br>
+  <br>
+  <br>
+let query : tree -> int -> int -> answer = fun tree left_border right_border -><br>
+  let get_middle : node -> int = fun n -> <br>
+        (* On déduit la position du noeud actuel *)<br>
+        (* donne la position minimum à droite *)<br>
+    n.left + ((n.right - n.left) / 2) <br>
+  in<br>
+  let rec aux : tree -> int -> int -> node = fun node l r -><br>
+    match node with<br>
+        (* Si une feuille est trouvée on récupère la réponse et la renvoit à la fonction ayant appelé celle-ci *)<br>
+    | Leaf { node } -> node<br>
+    <br>
+        (* Si la node est comprise entre les bordures droite et gauche strictement *)<br>
+    | Node { node; left_child= _; right_child = _ } when l = node.left && r = node.right -> node (* this only happens when the query gods smile upon us*)<br>
+    <br>
+        (* Si la node est comprise entre les bordures droite inférieur au max et gauche *)<br>
+    | Node { node; left_child = _; right_child = _ } when l = node.left && r > node.right ->  combine node (aux tree(node.right + 1) r)<br>
+    <br>
+        (* Si la node est hors de la range rechercher on renvoit une erreur *)<br>
+    | Node { node = {answer = _ ; left ;right}; left_child = _; right_child = _ } when r < left || l > right -> raise (Invalid_argument "Outside the range")<br>
+    <br>
+        (*<br>
+           this happens when the query gods aren't satisfied with our blood sacrifises<br>
+        *)<br>
+        <br>
+        <br>
+        (* Si une Node est trouvée *)<br>
+    | Node { node; left_child; right_child = _ } when l <= get_middle node -> aux left_child l r<br>
+    <br>
+        (* Si une Node est trouvée *)<br>
+    | Node { node; left_child = _; right_child } -><br>
+        aux right_child l r(*query gods are obviously trying to make me kill myself*)<br>
+  in<br>
+  (aux tree left_border right_border).answer<br>
+    
+let query_sum = create [ 1; 3; -2; 8; -7; 6; -5; 1 ];;<br>
+let updated = update query_sum 8 4;;<br>
+    <br>
+<br>
+to_string (query query_sum 0 3);;<br>
+  <br>
+to_string (query query_sum 2 6);;<br>
+  <br>
+to_string (query query_sum 4 7);;<br>
+  <br>
+to_string (query query_sum 0 7);;<br>
+  <br>
+to_string (query updated 0 3);;<br>
+  <br>
+to_string (query updated 2 6);;<br>
+  <br>
+to_string (query updated 4 7);;<br>
+  <br>
+to_string (query updated 0 7);;<br>
+
+<h1>
+    Resultat :
+</h1>
+
+<img src="Capture d'écran 2024-04-16 154735.png" alt="screenshot" srcset="">
+</body>
+</html>
