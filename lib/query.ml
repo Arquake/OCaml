@@ -54,37 +54,38 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
     in
     research_and_replace arbre
 
-    let query : tree -> int -> int -> answer = fun tree l r ->
-      let rec aux node l r =
+    let query : tree -> int -> int -> answer = fun tree left_border right_border ->
+      let get_middle : N.node -> int = fun n -> 
+        (* On déduit la position du noeud actuel *)
+        (* donne la position minimum à droite *)
+        n.left + ((n.right - n.left) / 2) 
+      in
+      let rec aux : tree -> int -> int -> N.node = fun node l r ->
         match node with
         (* Si une feuille est trouvée on récupère la réponse et la renvoit à la fonction ayant appelé celle-ci *)
-        | Leaf { node = { N.answer; left; right } } ->
-          if left >= l && right <= r then
-            answer 
-          else
-            failwith "Outside the range"
+        | Leaf { node } -> node
+
+        (* Si la node est comprise entre les bordures droite et gauche strictement *)
+        | Node { node; left_child; right_child } when l = node.left && r = node.right -> node (* this only happens when the query gods smile upon us*)
+
+        (* Si la node est comprise entre les bordures droite inférieur au max et gauche *)
+        | Node { node; left_child; right_child } when l = node.left && r >= node.right -> N.combine node (aux tree(node.right + 1) r)
+
+        (* Si la node est hors de la range rechercher on renvoit une erreur *)
+        | Node { node = {N.answer ; left ;right}; left_child; right_child } when r < left || l > right -> raise (Invalid_argument "Outside the range")
+
+        (*
+           this happens when the query gods aren't satisfied with our blood sacrifises
+        *)
+
 
         (* Si une Node est trouvée *)
-        | Node { node = { N.answer; left; right }; left_child; right_child } ->
-          (* Si elle est hors de la range rechercher on renvoit une erreur *)
-          if r < left || l > right then
-            failwith "Outside the range"
-          else if l <= left && r >= right then
-            answer  (* this only happens when the query gods smile upon us*)
-          else
-            (*this happens when the query gods aren't satisfied with our blood sacrifises *)
-            (* On déduit la position du noeud actuel *)
-            let middle = left + ((right - left) / 2) in
-            (* 
-              le noeud gauche peut prendre 2 valeurs :
-                - si la range droite est inférieur ou égal au milieu on fait un appel récursif sur aux avec l'enfant de gauche et les deux bornes
-                - sinon on crée une réponse 
-            *)
-            let left_node = if r <= middle then aux left_child l r else {node = { answer = N.create 0; left = left; right = middle }} in
-            let right_node = if l > middle then aux right_child l r else { answer = N.create 0; left = middle + 1; right = right } in
-            (N.combine left_node right_node).answer (*query gods are obviously trying to make me kill myself*)
+        | Node { node; left_child; right_child } when l < get_middle node -> aux left_child l r
+
+        (* Si une Node est trouvée *)
+        | Node { node; left_child; right_child } -> aux right_child l r(*query gods are obviously trying to make me kill myself*)
       in
-      aux tree l r
+      (aux tree left_border right_border).answer
     
     
 end
