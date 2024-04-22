@@ -66,7 +66,7 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
         | Leaf { node } -> node
 
         (* Si la node est comprise entre les bordures droite et gauche strictement *)
-        | Node { node; left_child= _; right_child = _ } when l = node.left && r = node.right -> node (* this only happens when the query gods smile upon us*)
+        | Node { node; left_child= _; right_child = _ } when l = node.left && r = node.right -> node 
 
         (* Si la node est comprise entre les bordures droite inférieur au max et gauche *)
         | Node { node; left_child = _; right_child = _ } when l = node.left && r > node.right -> N.combine node (aux tree(node.right + 1) r)
@@ -74,16 +74,12 @@ module Make (N : NODE) : QUERY_STRUCTURE = struct
         (* Si la node est hors de la range rechercher on renvoit une erreur *)
         | Node { node = {N.answer = _ ; left ;right}; left_child = _; right_child = _ } when r < left || l > right -> raise (Invalid_argument "Outside the range")
 
-        (*
-           this happens when the query gods aren't satisfied with our blood sacrifises
-        *)
-
 
         (* Si une Node est trouvée *)
         | Node { node; left_child; right_child = _ } when l <= get_middle node -> aux left_child l r
 
         (* Si une Node est trouvée *)
-        | Node { node = _; left_child = _; right_child } -> aux right_child l r(*query gods are obviously trying to make me kill myself*)
+        | Node { node = _; left_child = _; right_child } -> aux right_child l r
       in
       (aux tree left_border right_border).answer
     
